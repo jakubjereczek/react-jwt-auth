@@ -3,7 +3,6 @@
 # dependencies
 client/node_modules
 server/node_modules
-*/node_modules
 client/.pnp
 client/.pnp.js
 server/.pnp
@@ -25,3 +24,5 @@ client/.env.production.local
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
+
+server/nodemon.json
