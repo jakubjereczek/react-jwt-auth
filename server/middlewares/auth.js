@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+// Wykorzystywane przy innych routach.
 function authoricate(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
