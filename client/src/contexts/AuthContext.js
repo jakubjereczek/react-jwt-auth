@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 
 import { useLocalStorage } from '../hooks';
-import axios from 'axios';
+import { STORAGE } from '../constants/auth'
+import axiosApiInstance from '../axios/authService';
 
 const AuthContext = React.createContext(undefined);
 
@@ -13,7 +14,7 @@ const URL = "http://127.0.0.1:80";
 
 export const AuthProvider = ({ children }) => {
 
-    const [setStorage, getStorage] = useLocalStorage("storage");
+    const [setStorage, getStorage] = useLocalStorage(STORAGE);
     const [isLoading, setLoading] = useState(true);
 
     const storage = getStorage();
@@ -21,22 +22,17 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, password) => {
         setLoading(true)
-        await axios.post(`${URL}/users/signup`,
+        await axiosApiInstance().post(`${URL}/users/signup`,
             {
                 name,
                 password,
             })
-            .catch((err) => {
-                console.log('Bląd z Sign up: ' + err)
-                setLoading(false);
-            });
         login(name, password);
     }
 
-
     const login = (name, password) => {
         setLoading(true)
-        axios.post(`${URL}/users/login`,
+        axiosApiInstance().post(`${URL}/users/login`,
             {
                 name,
                 password
@@ -44,47 +40,27 @@ export const AuthProvider = ({ children }) => {
             .then(res => {
                 const data = res.data;
                 setStorage({
-                    expired: data.accessTokenExpires,
                     tokens: data.tokens,
                     user: data.user
                 });
-                setLoading(false);
 
             })
-            .catch((err) => {
-                console.log('Bląd z Login: ' + err)
-                setLoading(false);
-            });
+            .catch(setLoading(false));
 
     }
 
-    const logout = () => setStorage({
-        expired: null,
-        tokens: null,
-        user: null
-    });
+    const logout = () => setStorage({ tokens: null, user: null });
 
-    function checkAuth() {
-        // Jeśli dane sa przegądarce
-        console.log(storage);
-        if (storage) {
-            setLoading(true)
-            //...
-            setLoading(false)
-        } else {
-            setLoading(false)
-        }
-    }
+    const getList = async () => await axiosApiInstance().post(`${URL}/users/users`);
 
-    // // Załadowanie danych.
-    useEffect(() => checkAuth, [storage])
-
+    useEffect(() => setLoading(false), [setStorage])
 
     const values = {
         user,
         login,
         signup,
-        logout
+        logout,
+        getList
     }
 
     return (

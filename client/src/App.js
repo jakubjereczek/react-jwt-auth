@@ -2,8 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './contexts/AuthContext.js';
 
+import AuthService from './axios/authService';
+
 import Login from './components/Login';
 import Signup from './components/Signup.js';
+
 
 const App = () => {
 
@@ -26,6 +29,12 @@ const App = () => {
           </React.Fragment>
         )
       }
+
+      {/* Testowa metoda */}
+      {<h2 onClick={() =>
+        auth.getList()
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err))}>GET LIST</h2>}
     </div>
   );
 }

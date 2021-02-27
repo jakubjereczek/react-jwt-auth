@@ -5,7 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const EXPIRED_MINISECOUNDS = 5000; // 5 sekund
+const EXPIRED_MINISECOUNDS = 30; // 30 secounds
+const EXPIRED_REFRESH_MILISECOUNDS = 60 * 2; // 120 s.
 
 const users_create = (req, res, next) => {
 
@@ -72,7 +73,7 @@ const users_login = (req, res, next) => {
             if (!err) {
                 if (result) {
                     const accessToken = jwt.sign({ _id: doc._id, name: doc.name }, process.env.JWT_SECRET_TOKEN, { expiresIn: EXPIRED_MINISECOUNDS });
-                    const refreshToken = jwt.sign({ _id: doc._id, name: doc.name }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: 525600 }); // wykorzystywany w momecie gdy glowny token wygaśnie, dzieki temu uzytkonik nie bedzie musiał sie ponownie logować bo wygenerujemy nowy accessToken
+                    const refreshToken = jwt.sign({ _id: doc._id, name: doc.name }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: EXPIRED_REFRESH_MILISECOUNDS }); // wykorzystywany w momecie gdy glowny token wygaśnie, dzieki temu uzytkonik nie bedzie musiał sie ponownie logować bo wygenerujemy nowy accessToken
 
                     return (
                         res.status(200).json({
@@ -84,9 +85,7 @@ const users_login = (req, res, next) => {
                             tokens: {
                                 accessToken,
                                 refreshToken
-                            },
-                            accessTokenExpires: (new Date().getTime() + parseInt(EXPIRED_MINISECOUNDS)),
-
+                            }
                         }))
 
                 } else {
@@ -121,9 +120,6 @@ const users_login = (req, res, next) => {
 // odswiezanie tokenu na podstawie refresh tokenu
 const users_refresh_token = (req, res, next) => {
     const { refreshToken, _id, name } = req.body;
-    console.log(refreshToken);
-    console.log(_id);
-    console.log(name);
 
     if (!refreshToken)
         return res.status(401).json({
@@ -139,9 +135,7 @@ const users_refresh_token = (req, res, next) => {
             message: "Token refreshed",
             tokens: {
                 accessToken,
-            },
-            accessTokenExpires: (new Date().getTime() + parseInt(EXPIRED_MINISECOUNDS)),
-
+            }
         })
     } catch (err) {
         console.log("blad", err);
@@ -152,9 +146,21 @@ const users_refresh_token = (req, res, next) => {
 
 };
 
+const users_list = (req, res, next) => {
+    res.status(200).json({
+        users: [
+            { id: 1, name: "Jakub" },
+            { id: 2, name: "Rafał" }
+        ]
+
+    })
+}
+
 
 module.exports = {
     users_create,
     users_login,
-    users_refresh_token
+    users_refresh_token,
+
+    users_list
 }
