@@ -9,12 +9,13 @@ export default () => {
 
     let axiosInstance = null;
 
-    if (storage && storage.tokens) {
+    console.log(storage.user);
+
+    if (storage && storage.tokens && storage.user) {
         axiosInstance = axios.create({
             headers: {
                 'authorization': `Bearer ${storage.tokens.accessToken}`,
-                'refresh-token': `${storage.tokens.refreshToken}`,
-                'user': `${storage.user}`,
+                'user_id': storage.user._id,
             }
         });
     } else {
@@ -27,9 +28,8 @@ export default () => {
             // Aktualizacja tokenów.
             const tokens = {
                 accessToken: response.headers['authorization'],
-                refreshToken: response.headers['refresh-token']
             };
-            if (tokens.accessToken && tokens.refreshToken) {
+            if (tokens.accessToken) {
                 const storage = getValue(STORAGE);
 
                 const newStorage = {
