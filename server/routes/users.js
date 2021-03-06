@@ -8,8 +8,8 @@ const auth = require('../middlewares/auth');
 
 router.post('/signup', userController.users_create);
 router.post('/login', userController.users_login);
-router.post('/refresh_tokens', userController.users_refresh_token);
 
+// routes need authorization
 router.post('/users', auth, userController.users_list);
 
 module.exports = router;
