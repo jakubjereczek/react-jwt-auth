@@ -29,9 +29,8 @@ app.get('*', function (req, res, next) {
     next(err);
 })
 
-// errors handlers in routess
+// errors handlers in routes
 app.use((err, req, res, next) => {
-    console.log('********** Wystąpił bląd. Error: ' + err);
 
     console.log(err.statusCode);
     if (!err.statusCode) {

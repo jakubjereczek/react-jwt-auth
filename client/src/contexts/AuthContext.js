@@ -20,21 +20,22 @@ export const AuthProvider = ({ children }) => {
     const storage = getStorage();
     const user = storage ? storage.user : null;
 
-    const signup = async (name, password) => {
+    const signup = async (email, password, name) => {
         setLoading(true)
         await axiosApiInstance().post(`${URL}/users/signup`,
             {
-                name,
+                email,
                 password,
+                name,
             })
-        login(name, password);
+        login(email, password);
     }
 
-    const login = (name, password) => {
+    const login = (email, password) => {
         setLoading(true)
         axiosApiInstance().post(`${URL}/users/login`,
             {
-                name,
+                email,
                 password
             })
             .then(res => {

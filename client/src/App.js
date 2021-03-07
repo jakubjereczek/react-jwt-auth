@@ -19,7 +19,7 @@ const App = () => {
     <div className="App">
       {user ? (
         <React.Fragment>
-          User: {user ? <h1>{user.name}</h1> : <h1>not login</h1>}
+          User: {user ? <h1>{user.email}</h1> : <h1>not login</h1>}
           <button onClick={() => auth.logout()}>Logout</button>
         </React.Fragment>
       ) : (

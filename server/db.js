@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const db = 'mongodb+srv://database-admin:' + process.env.DB_PASSWORD + '@db.e2byc.mongodb.net/chatapp?retryWrites=true&w=majority';
+const db = 'mongodb+srv://database-admin:' + process.env.DB_PASSWORD + '@db.e2byc.mongodb.net/auth?retryWrites=true&w=majority';
 
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.set('useCreateIndex', true)

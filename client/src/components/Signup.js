@@ -4,21 +4,36 @@ import { useAuth } from '../contexts/AuthContext';
 const Signup = () => {
     const auth = useAuth();
 
-    const refName = useRef("");
-    const refPassword = useRef("");
+    const refEmail = useRef(""), refPassword = useRef(""), refName = useRef("");
 
     function submitHandler() {
-        auth.signup(refName.current.value, refPassword.current.value);
+        // TODO: Sprawdzanie poprawności haseł - dwa inputy.
+        // TODO: walidacja.
+        auth.signup(refEmail.current.value, refPassword.current.value, refName.current.value);
     }
 
     return (
         <React.Fragment>
+            <label htmlFor="email-input">Email address</label>
             <input
                 type="text"
-                ref={refName} />
+                ref={refEmail}
+                id="email-input" />
+            <label htmlFor="name-input">Name</label>
             <input
                 type="text"
-                ref={refPassword} />
+                ref={refName}
+                id="name-input" />
+            <label htmlFor="password-input">Password</label>
+            <input
+                type="text"
+                ref={refPassword}
+                id="password-input" />
+            <label htmlFor="password-confirm-input">Password comfirm</label>
+            <input
+                type="text"
+                ref={null}
+                id="password-confirm-input" />
             <button onClick={submitHandler} type="submit" >Sign up</button>
         </React.Fragment>
     );

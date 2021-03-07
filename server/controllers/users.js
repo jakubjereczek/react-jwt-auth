@@ -12,10 +12,10 @@ const EXPIRED_REFRESH_MILISECOUNDS = 60 * 2; // 120 s.
 
 const users_create = (req, res, next) => {
 
-    const { name, password } = req.body;
+    const { email, password, name } = req.body;
 
-    if (!name || !password) {
-        const error = new Error("Field name or password is incorrect")
+    if (!email || !password) {
+        const error = new Error("Field email or password is incorrect")
         error.statusCode = 400;
         next(error);
     }
@@ -24,7 +24,8 @@ const users_create = (req, res, next) => {
         if (err) next(err);
         const userModel = new User({
             _id: new mongoose.Types.ObjectId,
-            // name jest unique - więc nie trzeba sprawdzać czy user istnieje 
+            // email jest unique - więc nie trzeba sprawdzać czy user istnieje 
+            email,
             name,
             password: hash,
         })
@@ -41,7 +42,7 @@ const users_create = (req, res, next) => {
                     res.status(200).json({
                         message: "Account is created",
                         user: {
-                            name,
+                            email,
                         }
                     })
                 })
@@ -55,26 +56,22 @@ const users_create = (req, res, next) => {
 };
 
 const users_login = (req, res, next) => {
-    const { name, password } = req.body;
+    const { email, password } = req.body;
 
-    User.findOne({ name }).then((doc) => {
-
+    User.findOneAndUpdate({ email }, { $set: { lastLoginAt: Date.now() } }).then((doc) => {
         if (!doc) {
-            const error = new Error("Field name or password is empty")
+            const error = new Error("Field email or password is empty")
             error.statusCode = 404;
             next(error)
         }
-
-        console.log('2. User znaleziony', doc.name);
-
 
         // gdy uzytkownik istnieje
         bcrypt.compare(password, doc.password, (err, result) => {
             if (err) next(err);
 
             if (result) {
-                const accessToken = jwt.sign({ _id: doc._id, name: doc.name }, process.env.JWT_SECRET_TOKEN, { expiresIn: EXPIRED_MINISECOUNDS });
-                const refreshToken = jwt.sign({ _id: doc._id, name: doc.name }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: EXPIRED_REFRESH_MILISECOUNDS }); // wykorzystywany w momecie gdy glowny token wygaśnie, dzieki temu uzytkonik nie bedzie musiał sie ponownie logować bo wygenerujemy nowy accessToken
+                const accessToken = jwt.sign({ _id: doc._id, email: doc.email }, process.env.JWT_SECRET_TOKEN, { expiresIn: EXPIRED_MINISECOUNDS });
+                const refreshToken = jwt.sign({ _id: doc._id, email: doc.email }, process.env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: EXPIRED_REFRESH_MILISECOUNDS }); // wykorzystywany w momecie gdy glowny token wygaśnie, dzieki temu uzytkonik nie bedzie musiał sie ponownie logować bo wygenerujemy nowy accessToken
 
                 RefreshToken.findOneAndUpdate({ user: doc._id }, { $set: { key: refreshToken } }, { new: true })
                     .then(doc2 => {
@@ -83,6 +80,7 @@ const users_login = (req, res, next) => {
                             message: "User log in",
                             user: {
                                 _id: doc._id,
+                                email: doc.email,
                                 name: doc.name,
                             },
                             tokens: {

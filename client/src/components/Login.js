@@ -4,18 +4,18 @@ import { useAuth } from '../contexts/AuthContext';
 const Login = () => {
     const auth = useAuth();
 
-    const refName = useRef("");
+    const refEmail = useRef("");
     const refPassword = useRef("");
 
     function submitHandler() {
-        auth.login(refName.current.value, refPassword.current.value);
+        auth.login(refEmail.current.value, refPassword.current.value);
     }
 
     return (
         <React.Fragment>
             <input
                 type="text"
-                ref={refName} />
+                ref={refEmail} />
             <input
                 type="text"
                 ref={refPassword} />

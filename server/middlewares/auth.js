@@ -42,7 +42,6 @@ function auth(req, res, next) {
                         // Jesli REFRESH TOKEN wygasł - to ustawiamy na null oraz odsylamy blad 401.
                         RefreshToken.findOneAndUpdate({ user: userId }, { $set: { key: null } }, { new: true }, (err, res) => {
                             // if (err) return res.status(401);
-
                             console.log('token updated');
                         })
 
